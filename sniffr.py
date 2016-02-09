@@ -86,7 +86,7 @@ assets.register("application", js_app)
 
 # Setup application logging
 # TODO Setup SMTP logging for critical errors
-file_handler = RotatingFileHandler('/var/log/sniffr.log', 'a', 1 * 1024 * 1024, 10)
+file_handler = RotatingFileHandler('/var/log/application.log', 'a', 1 * 1024 * 1024, 10)
 file_handler.setFormatter(logging.Formatter('%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
 file_handler.setLevel(logging.DEBUG)
 app.logger.setLevel(logging.DEBUG)
