@@ -1,0 +1,7 @@
+{
+  "directory" : "static/assets",
+  "ignoredDependencies": [
+    "jquery",
+    "bootstrap"
+  ]
+}

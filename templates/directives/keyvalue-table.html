@@ -1,0 +1,71 @@
+{#
+ # This is free and unencumbered software released into the public domain.
+ #
+ # Anyone is free to copy, modify, publish, use, compile, sell, or
+ # distribute this software, either in source code form or as a compiled
+ # binary, for any purpose, commercial or non-commercial, and by any
+ # means.
+ #
+ # # In jurisdictions that recognize copyright laws, the author or authors
+ # of this software dedicate any and all copyright interest in the
+ # software to the public domain. We make this dedication for the benefit
+ # of the public at large and to the detriment of our heirs and
+ # successors. We intend this dedication to be an overt act of
+ # relinquishment in perpetuity of all present and future rights to this
+ # software under copyright law.
+ #
+ # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ # IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ # OTHER DEALINGS IN THE SOFTWARE.
+ #
+ # For more information, please refer to <http://unlicense.org>
+ #}
+<script type="text/ng-template" id="keyvalue-table.html">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <h3 class="panel-title" style="display:inline-block;"><span>{% raw %}{{ title }}{% endraw %}</span></h3>
+            <button data-ng-show="allowText == 'true'" type="button" class="pull-right btn btn-link" data-ng-click="displayTextInput = !displayTextInput" style="margin-top:-7px;">
+                <span data-ng-if="!displayTextInput">
+                    <span class="glyphicon glyphicon-file"></span>
+                    <span>Switch to Text Input</span>
+                </span>
+                <span data-ng-if="displayTextInput">
+                    <span class="glyphicon glyphicon-list"></span>
+                    <span>Switch to Key Value Input</span>
+                </span>
+            </button>
+            <button data-ng-hide="displayTextInput" type="button" class="pull-right btn btn-link" data-ng-click="addLine()" style="margin-top:-7px;">
+                <span class="glyphicon glyphicon-plus-sign"></span>
+                <span>{% raw %}{{ action }}{% endraw %}</span>
+            </button>
+        </div>
+        <div class="panel-body">
+            <div data-ng-if="content.length == 0 && !displayTextInput" class="alert alert-info" role="alert">Go ahead... add some stuff here.</div>
+            <table class="table table-hover table-condensed" data-ng-if="content.length > 0 && !displayTextInput">
+                <tbody>
+                    <tr data-ng-repeat="c in content">
+                        <td><input type="text" data-ng-disabled="c.disabled" class="form-control" placeholder="Key" required name="formdata[headers][{% raw %}{{ $index }}{% endraw %}][key]" data-ng-model="c.key" /></td>
+                        <td><input type="text" data-ng-disabled="c.disabled" class="form-control" placeholder="Value" required name="formdata[headers][{% raw %}{{ $index }}{% endraw %}][value]" data-ng-model="c.value" /></td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                <!--<button title="{% raw %}Toggle '{{ c.key }}'{% endraw %}" class="btn btn-default" type="button" data-ng-click="toggleLine($index)">
+                                    <span data-ng-class="{ 'glyphicon-eye-close': !c.disabled, 'glyphicon-eye-open': c.disabled }" class="glyphicon "></span>
+                                </button>-->
+                                <button title="{% raw %}Remove '{{ c.key }}'{% endraw %}" class="btn btn-danger" type="button" data-ng-click="removeLine($index)">
+                                    <span class="glyphicon glyphicon-trash"></span>
+                                </button>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            {# ngIf creates a new scope (much like ngRepeat) so we must use $parent.content #}
+            <textarea data-ng-if="displayTextInput" data-ng-model="$parent.content" rows="3" class="form-control" placeholder="Paste your JSON dataset or URL encoded parameters (param1=value1&param2=value2) here instead of creating them line by line. This data will be sent 'as-is' in your request and depending on the request method that you choose will be automatically added to the request body (e.g. POST) or the URL (e.g. GET)."></textarea>
+        </div>
+    </div>
+</script>

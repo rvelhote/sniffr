@@ -1,0 +1,23 @@
+{
+  "name": "sniffr.xyz",
+  "authors": [
+    "Anonymous Developer <anonymous@mailinator.com>"
+  ],
+  "description": "",
+  "main": "",
+  "moduleType": [],
+  "license": "Unlicense",
+  "homepage": "",
+  "private": true,
+  "dependencies": {
+    "angular": "angularjs#~1.4.9",
+    "nprogress": "~0.2.0",
+    "bootswatch": "~3.3.6+1",
+    "angular-sanitize": "~1.4.9",
+    "angular-recaptcha": "~2.2.5",
+    "angular-cookies": "~1.4.9",
+    "angular-lz-string": "^1.0.3",
+    "code-prettify": "*",
+    "angular-webstorage": "^0.14.0"
+  }
+}

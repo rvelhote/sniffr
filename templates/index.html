@@ -1,0 +1,249 @@
+{#
+ # This is free and unencumbered software released into the public domain.
+ #
+ # Anyone is free to copy, modify, publish, use, compile, sell, or
+ # distribute this software, either in source code form or as a compiled
+ # binary, for any purpose, commercial or non-commercial, and by any
+ # means.
+ #
+ # # In jurisdictions that recognize copyright laws, the author or authors
+ # of this software dedicate any and all copyright interest in the
+ # software to the public domain. We make this dedication for the benefit
+ # of the public at large and to the detriment of our heirs and
+ # successors. We intend this dedication to be an overt act of
+ # relinquishment in perpetuity of all present and future rights to this
+ # software under copyright law.
+ #
+ # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND,
+ # EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+ # MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+ # IN NO EVENT SHALL THE AUTHORS BE LIABLE FOR ANY CLAIM, DAMAGES OR
+ # OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE,
+ # ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR
+ # OTHER DEALINGS IN THE SOFTWARE.
+ #
+ # For more information, please refer to <http://unlicense.org>
+ #}<!doctype html>
+<html data-ng-app="WebSnifferApplication">
+    <head>
+        <meta charset="utf-8">
+        <title>HTTP Sniffer: View Request and Response Headers</title>
+
+        <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+
+        <link rel="shortcut icon" href="/static/favicon.ico?v1">
+
+        <link rel="stylesheet" type="text/css" href="/static/assets/bootswatch/lumen/bootstrap.min.css">
+        <link rel="stylesheet" type="text/css" href="/static/assets/nprogress/nprogress.css">
+
+        <style type="text/css">
+            html { overflow-y: scroll; }
+            html, body { height: 100%; }
+
+            h1 { font-size: 1.8rem; margin-top: 10px; font-weight: bold; display: inline-block; }
+            h1 img { vertical-align: baseline; }
+
+            form { margin-bottom: 10px; }
+            pre { max-height: 650px; }
+
+            code, li.header .value { word-break: break-all; }
+
+            footer { text-align: center; }
+            footer strong { font-size: 1.2rem; }
+
+            #wrap { min-height: 100%; height: auto !important; height: 100%; margin: 0 auto -230px; }
+            #push { height: 230px; }
+
+            ul.headers { margin: 0px; }
+
+            html div[role=spinner] {
+                display: none !important;
+            }
+
+            #nprogress div.bar {
+                background-color: #158CBA;
+            }
+
+            select { border: none; background-color: #EEE; }
+
+            main { opacity: 0; transition: opacity 250ms; }
+            main.hasData { opacity: 1; }
+
+            table.table { margin-bottom: 0px; }
+            
+            textarea {
+                resize: vertical;
+            }
+
+            fieldset { margin-bottom: 25px; }
+            fieldset legend { margin-bottom: 0px; border-width: 0 1px 4px 1px; }
+        </style>
+
+        <script type="text/javascript">
+            var __ua = "{{ user.agent }}";
+        </script>
+
+        <script src="//www.google.com/recaptcha/api.js?onload=vcRecaptchaApiLoaded&render=explicit" async defer></script>
+
+        {% assets "libraries" %}
+            <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+
+        {% assets "application" %}
+            <script type="text/javascript" src="{{ ASSET_URL }}"></script>
+        {% endassets %}
+    </head>
+    <body data-ng-controller="WebSniffer" data-ng-keypress="keyboard($event)">
+        <div id="wrap">
+            <nav class="navbar navbar-default">
+                <div class="container-fluid">
+                    <div>
+                        <h1><img src="//i.imgur.com/rN1zILE.png" />&nbsp;sniffr.xyz</h1>
+                        <small>Make <a target="_blank" href="http://www.ietf.org/rfc/rfc2616.txt">HTTP/HTTPS</a> requests, view headers and response. Your IP address and the Host you are requesting are logged.</small>
+                    </div>
+                    <form data-ng-submit="checkAddress($event)" action="/q" method="post" name="sniff" id="sniff" novalidate="novalidate">
+                        <div class="form-group">
+                            <div class="input-group">
+                                <div class="input-group-addon">
+                                    <select data-ng-model="formdata.method" data-ng-options="method for method in static.methods"></select>
+                                </div>
+                                <input type="url" class="form-control" id="url" name="url" data-ng-model="formdata.url" required placeholder="Enter the URL/URI to check...">
+                                <span class="input-group-btn">
+                                    <button disabled="disabled" data-ng-disabled="sniff.$invalid || working" type="submit" class="btn btn-primary">
+                                        <span class="glyphicon glyphicon-link"></span>&nbsp;<span>Sniff It!</span>
+                                    </button>
+                                </span>
+                            </div>
+                        </div>
+
+                        <div class="form-group" style="text-align: center;">
+                            <button data-ng-click="options.showAdvanced = !options.showAdvanced" style="padding:0px;" type="button" class="btn btn-link">
+                                <span data-ng-if="!options.showAdvanced">Show</span>
+                                <span data-ng-if="options.showAdvanced">Hide</span>&nbsp;<span>Advanced</span>
+                                <span data-ng-if="formdata.headers.length > 0 || formdata.parameters.length > 0">
+                                    <span data-ng-if="formdata.headers.length > 0">{% raw %}({{ formdata.headers.length }} Headers){% endraw %}</span>
+                                    <span data-ng-if="formdata.parameters.length > 0">(+parameters)</span>
+                                </span>
+                                <span data-ng-class="{ 'glyphicon-chevron-down': !options.showAdvanced, 'glyphicon-chevron-up': options.showAdvanced }" class="glyphicon "></span>
+                            </button>
+                        </div>
+
+                        <div class="row" data-ng-show="options.showAdvanced">
+                            <div class="col-lg-12">
+                                <div class="row">
+                                    <div class="col-lg-6" data-key-value-table data-allow-text="false" data-title="HTTP Headers" data-source="formdata.headers" data-action="Add Header"></div>
+                                    <div class="col-lg-6" data-key-value-table data-allow-text="true" data-title="Parameters" data-source="formdata.parameters" data-action="Add Parameter"></div>
+                                </div>
+                                <!--<hr />
+                                <div class="row">
+                                    <div class="col-lg-12">
+                                        <div class="form-group">
+                                            <span>Use this link to share the settings you have here to other users. For example, if you are writing a tutorial you can use this to help your users perform sample requests.</span>
+                                            <div class="input-group">
+                                                <input type="text" class="form-control" id="generated-link" data-ng-model="generatedLink" />
+                                                <span class="input-group-btn">
+                                                    <button type="button" class="btn btn-primary" data-ng-click="generateLink()">Generate Link</button>
+                                                </span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>-->
+                            </div>
+                        </div>
+
+                        <input data-ng-if="options.showRecaptcha" type="hidden" required name="gcaptcha" data-ng-model="formdata.gcaptcha" />
+                    </form>
+                </div>
+            </nav>
+
+            <div class="container">
+                <div class="row" data-ng-if="messages.length > 0">
+                    <div class="col-lg-12">
+                        <div data-ng-repeat="m in messages"  class="alert alert-danger">{% raw %}{{ m }}{% endraw %}</div>
+                    </div>
+                </div>
+                <div class="row" data-ng-if="options.showRecaptcha" data-ng-init="options.showRecaptcha = {{"true" if recaptcha.show else "false"}}">
+                    <hr data-ng-if="messages.length > 0" />
+                    <div class="col-lg-12">
+                        <div style="margin:0px auto;width:304px;" vc-recaptcha key="'{{ recaptcha.public_key }}'" on-success="formdata.gcaptcha = response; options.showRecaptcha = false;"></div>
+                        <small style="text-align: center;display:block;">Please confirm that you are not a robot.<br />This verification will be required again after 30 minutes after your first successful request.</small>
+                    </div>
+                </div>
+            </div>
+
+            <main class="container-fluid" data-ng-class="{ hasData: !working && address != null }">
+                <div class="row">
+                    <div class="col-lg-3">
+                        <fieldset>
+                            <legend><strong>Request Headers</strong></legend>
+                            <ul class="list-unstyled headers">
+                                <li class="header" data-ng-repeat="(header, value) in address.headers.request">
+                                    <strong class="key"><abbr data-sniffr-title="{% raw %}{{ header }}{% endraw %}">{% raw %}{{ header }}{% endraw %}</abbr>:</strong>
+                                    <span class="value">{% raw %}{{ value }}{% endraw %}</span>
+                                </li>
+                            </ul>
+                        </fieldset>
+                        <fieldset>
+                            <legend><strong>Response Headers</strong> ({% raw %}{{ address.status }}{% endraw %})</legend>
+                            <ul class="list-unstyled headers">
+                                <li class="header" data-ng-repeat="(header, value) in address.headers.response">
+                                    <strong class="key"><abbr data-sniffr-title="{% raw %}{{ header }}{% endraw %}">{% raw %}{{ header }}{% endraw %}</abbr>:</strong>
+                                    <span class="value">{% raw %}{{ value }}{% endraw %}</span>
+                                </li>
+                            </ul>
+                        </fieldset>
+                        <fieldset data-ng-if="address.redirect.length > 0">
+                            <legend><strong>Redirects</strong> ({% raw %}{{ address.redirect.length }}{% endraw %})</legend>
+                            <ol style="padding-left: 20px;" class="redirections">
+                                <li data-ng-repeat="r in address.redirect">{% raw %}{{ r.url }}{% endraw %}</li>
+                            </ol>
+                        </fieldset>
+                    </div>
+                    <div class="col-lg-9">
+                        <div class="row">
+                            <div class="col-lg-12">
+                                <strong>Content Length:</strong> <span>{% raw %}{{ address.ssize | humanReadable }}</span>{% endraw %}<span data-ng-if="address.size">&nbsp;(<span>{% raw %}{{ address.size | humanReadable }}{% endraw %})&nbsp;</span>|&nbsp;</span>
+                                <strong>Time Taken:</strong> <span>{% raw %}{{ address.elapsed | number:2 }} seconds{% endraw %}</span>
+                            </div>
+                            <hr />
+                            <div class="col-lg-12"><pre class="prettyprint"><code data-ng-bind-html="address.body"></code></pre></div>
+                        </div>
+                    </div>
+                </div>
+                <div id="push"></div>
+            </main>
+        </div>
+
+        <footer class="container">
+            <hr data-ng-show="address !== null" />
+
+            <ul class="list-inline">
+                <li><strong>IP Address:</strong>&nbsp;<span class="label label-info">{{ user.ip }}</span></li>
+                <li><strong>User Agent:</strong>&nbsp;<span class="label label-info">{{ user.agent }}</span></li>
+            </ul>
+
+            <small>Press <code>R</code> to refresh the URL in text box, <code>L</code> focus on the textbox, <code>A</code> to toggle the advanced options</small>
+
+            <hr />
+
+            <p><small>Source Code is available in <a href="https://github.com/rvelhote/sniffr">GitHub</a> under the <a href="http://unlicense.org/">Unlicense</a> license</small></p>
+            <p><small>All requests carry a <code>X-Forwarded-For</code> header so administrators can tell the real origin of the request</small></p>
+            <p><small>Please contact root@sniffr.xyz for anything that's on your mind (including insults :P)</small></p>
+
+            <hr />
+
+            <p><small>This tool is under development. Don't like it? Doesn't work? Here are some alternatives:</small></p>
+            <ul class="list-inline">
+                <li><a href="https://www.hurl.it">Hurl.it</a>,</li>
+                <li><a href="http://web-sniffer.net">Web Sniffer</a>,</li>
+                <li><a href="http://testuri.org">Test URI</a></li>
+            </ul>
+        </footer>
+
+        {% include "directives/keyvalue-table.html" %}
+
+        {% if (configuration.analytics_key | length) > 0 %}
+            {% include "google-analytics.html" %}
+        {% endif %}
+    </body>
+</html>
