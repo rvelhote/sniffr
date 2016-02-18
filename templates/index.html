@@ -45,7 +45,7 @@
             h1 img { vertical-align: baseline; }
 
             form { margin-bottom: 10px; }
-            pre { max-height: 650px; }
+            pre { max-height: 75vh; }
 
             code, li.header .value { word-break: break-all; }
 
@@ -174,7 +174,7 @@
 
             <main class="container-fluid" data-ng-class="{ hasData: !working && address != null }">
                 <div class="row">
-                    <div class="col-lg-3">
+                    <div class="col-lg-4">
                         <div class="panel" data-ng-class="address.status.code | statusCode">
                             <div class="panel-heading">
                                 <h3 class="panel-title">Request Status: {% raw %}{{ address.status.code }} {{ address.status.reason }}{% endraw %}</h3>
@@ -213,7 +213,7 @@
                                 </ul>
                             </div>
                         </div>
-                        <div class="panel panel-info" data-ng-if="address.redirect.length > 0">
+                        <div class="panel panel-default" data-ng-if="address.redirect.length > 0">
                             <div class="panel-heading">
                                 <h3 class="panel-title"><strong>Redirects</strong> ({% raw %}{{ address.redirect.length }}{% endraw %})</h3>
                             </div>
@@ -224,7 +224,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col-lg-9">
+                    <div class="col-lg-8">
                         <div class="row">
                             <div class="col-lg-12"><pre class="prettyprint"><code data-ng-bind-html="address.body"></code></pre></div>
                         </div>
