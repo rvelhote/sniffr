@@ -203,6 +203,7 @@
                     <div class="col-lg-9">
                         <div class="row">
                             <div class="col-lg-12">
+                                <strong>Server IP Address:</strong> <span>{% raw %}{{ address.ipaddress }}{% endraw %}</span>
                                 <strong>Content Length:</strong> <span>{% raw %}{{ address.ssize | humanReadable }}</span>{% endraw %}<span data-ng-if="address.size">&nbsp;(<span>{% raw %}{{ address.size | humanReadable }}{% endraw %})&nbsp;</span>|&nbsp;</span>
                                 <strong>Time Taken:</strong> <span>{% raw %}{{ address.elapsed | number:2 }} seconds{% endraw %}</span>
                             </div>

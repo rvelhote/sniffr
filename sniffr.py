@@ -56,6 +56,8 @@ from flask.ext.assets import Environment, Bundle
 import logging
 from logging.handlers import RotatingFileHandler
 
+import socket
+
 app = Flask(__name__)
 
 # Register all assets that will be minified
@@ -206,6 +208,7 @@ def sniffit():
                 'response': response_headers,
                 'request': request_headers
             },
+            'ipaddress': socket.gethostbyname(parsed_url.netloc),
             'ssl': None,
             'redirect': redirections,
             'body': base64.b64encode(cgi.escape(response.text.encode("UTF-8"))),
