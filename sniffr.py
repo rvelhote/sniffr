@@ -26,7 +26,7 @@ import requests
 import string
 import base64
 import cgi
-
+import pprint
 # XSRF
 from flask.ext import xsrf
 
@@ -200,7 +200,7 @@ def sniffit():
         request_headers.pop("X-Forwarded-For")
 
         # Create a history of redirects to inform the user
-        redirections = [{"url": redirect.url} for redirect in response.history]
+        redirections = [{"url": redirect.headers["location"]} for redirect in response.history]
 
         response_json["success"] = True
         response_json["showRecaptcha"] = recaptcha_handler.is_token_invalid()
