@@ -184,6 +184,7 @@
                                     <li><strong>Server IP Address:</strong> <span>{% raw %}{{ address.ipaddress }}{% endraw %}</span></li>
                                     <li><strong>Content Length:</strong> <span>{% raw %}{{ address.ssize | humanReadable }}</span>{% endraw %}<span data-ng-if="address.size">&nbsp;(<span>{% raw %}{{ address.size | humanReadable }}{% endraw %})&nbsp;</span></span></li>
                                     <li><strong>Time Taken:</strong> <span>{% raw %}{{ address.elapsed | number:2 }} seconds{% endraw %}</span></li>
+                                    <li><strong>Country:</strong> <span>{% raw %}{{ address.geolocation.country }}{% endraw %}</span> (<span>{% raw %}{{ address.geolocation.isp }}{% endraw %}</span>)</li>
                                 </ul>
                             </div>
                         </div>

@@ -202,6 +202,10 @@ def sniffit():
         # Create a history of redirects to inform the user
         redirections = [{"url": redirect.headers["location"]} for redirect in response.history]
 
+        # Geo Location
+        ipaddress = socket.gethostbyname(parsed_url.netloc)
+        geolocation_response = requests.get("http://ip-api.com/json/" + ipaddress);
+
         response_json["success"] = True
         response_json["showRecaptcha"] = recaptcha_handler.is_token_invalid()
         response_json["sniffed"] = {
@@ -209,7 +213,8 @@ def sniffit():
                 'response': response_headers,
                 'request': request_headers
             },
-            'ipaddress': socket.gethostbyname(parsed_url.netloc),
+            'ipaddress': ipaddress,
+            'geolocation': geolocation_response.json(),
             'ssl': None,
             'redirect': redirections,
             'body': base64.b64encode(cgi.escape(response.text.encode("UTF-8"))),
