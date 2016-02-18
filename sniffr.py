@@ -215,7 +215,10 @@ def sniffit():
             'size': response.headers.get("content-length", False),
             'ssize': len(response.text.encode("UTF-8")),
             'elapsed': response.elapsed.total_seconds(),
-            'status': str(response.status_code) + " " + response.reason,
+            'status': {
+                "reason": response.reason,
+                "code": str(response.status_code)
+            }
         }
     except Exception as e:
         raise RequestFailedException(repr(e))
