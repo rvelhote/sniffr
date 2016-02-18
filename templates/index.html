@@ -175,39 +175,57 @@
             <main class="container-fluid" data-ng-class="{ hasData: !working && address != null }">
                 <div class="row">
                     <div class="col-lg-3">
-                        <fieldset>
-                            <legend><strong>Request Headers</strong></legend>
-                            <ul class="list-unstyled headers">
-                                <li class="header" data-ng-repeat="(header, value) in address.headers.request">
-                                    <strong class="key"><abbr data-sniffr-title="{% raw %}{{ header }}{% endraw %}">{% raw %}{{ header }}{% endraw %}</abbr>:</strong>
-                                    <span class="value">{% raw %}{{ value }}{% endraw %}</span>
-                                </li>
-                            </ul>
-                        </fieldset>
-                        <fieldset>
-                            <legend><strong>Response Headers</strong> ({% raw %}{{ address.status }}{% endraw %})</legend>
-                            <ul class="list-unstyled headers">
-                                <li class="header" data-ng-repeat="(header, value) in address.headers.response">
-                                    <strong class="key"><abbr data-sniffr-title="{% raw %}{{ header }}{% endraw %}">{% raw %}{{ header }}{% endraw %}</abbr>:</strong>
-                                    <span class="value">{% raw %}{{ value }}{% endraw %}</span>
-                                </li>
-                            </ul>
-                        </fieldset>
-                        <fieldset data-ng-if="address.redirect.length > 0">
-                            <legend><strong>Redirects</strong> ({% raw %}{{ address.redirect.length }}{% endraw %})</legend>
-                            <ol style="padding-left: 20px;" class="redirections">
-                                <li data-ng-repeat="r in address.redirect">{% raw %}{{ r.url }}{% endraw %}</li>
-                            </ol>
-                        </fieldset>
+                        <div class="panel" data-ng-class="address.status.code | statusCode">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Request Status: {% raw %}{{ address.status.code }} {{ address.status.reason }}{% endraw %}</h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-unstyled">
+                                    <li><strong>Server IP Address:</strong> <span>{% raw %}{{ address.ipaddress }}{% endraw %}</span></li>
+                                    <li><strong>Content Length:</strong> <span>{% raw %}{{ address.ssize | humanReadable }}</span>{% endraw %}<span data-ng-if="address.size">&nbsp;(<span>{% raw %}{{ address.size | humanReadable }}{% endraw %})&nbsp;</span></span></li>
+                                    <li><strong>Time Taken:</strong> <span>{% raw %}{{ address.elapsed | number:2 }} seconds{% endraw %}</span></li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Request Headers</h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-unstyled headers">
+                                    <li class="header" data-ng-repeat="(header, value) in address.headers.request">
+                                        <strong class="key"><abbr data-sniffr-title="{% raw %}{{ header }}{% endraw %}">{% raw %}{{ header }}{% endraw %}</abbr>:</strong>
+                                        <span class="value">{% raw %}{{ value }}{% endraw %}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h3 class="panel-title">Response Headers</h3>
+                            </div>
+                            <div class="panel-body">
+                                <ul class="list-unstyled headers">
+                                    <li class="header" data-ng-repeat="(header, value) in address.headers.response">
+                                        <strong class="key"><abbr data-sniffr-title="{% raw %}{{ header }}{% endraw %}">{% raw %}{{ header }}{% endraw %}</abbr>:</strong>
+                                        <span class="value">{% raw %}{{ value }}{% endraw %}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="panel panel-info" data-ng-if="address.redirect.length > 0">
+                            <div class="panel-heading">
+                                <h3 class="panel-title"><strong>Redirects</strong> ({% raw %}{{ address.redirect.length }}{% endraw %})</h3>
+                            </div>
+                            <div class="panel-body">
+                                <ol style="padding-left: 20px;" class="redirections">
+                                    <li data-ng-repeat="r in address.redirect">{% raw %}{{ r.url }}{% endraw %}</li>
+                                </ol>
+                            </div>
+                        </div>
                     </div>
                     <div class="col-lg-9">
                         <div class="row">
-                            <div class="col-lg-12">
-                                <strong>Server IP Address:</strong> <span>{% raw %}{{ address.ipaddress }}{% endraw %}</span>
-                                <strong>Content Length:</strong> <span>{% raw %}{{ address.ssize | humanReadable }}</span>{% endraw %}<span data-ng-if="address.size">&nbsp;(<span>{% raw %}{{ address.size | humanReadable }}{% endraw %})&nbsp;</span>|&nbsp;</span>
-                                <strong>Time Taken:</strong> <span>{% raw %}{{ address.elapsed | number:2 }} seconds{% endraw %}</span>
-                            </div>
-                            <hr />
                             <div class="col-lg-12"><pre class="prettyprint"><code data-ng-bind-html="address.body"></code></pre></div>
                         </div>
                     </div>
