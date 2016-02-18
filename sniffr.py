@@ -82,6 +82,7 @@ js_app = Bundle(
     'application/js/directives/sniffr-title.js',
     'application/js/directives/sniffr-keyvalue-table.js',
     'application/js/filters/human-readable.js',
+    'application/js/filters/sniffr-request-status.js',
     filters='rjsmin',
     output='gen/application.js')
 assets.register("application", js_app)
