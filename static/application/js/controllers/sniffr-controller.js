@@ -37,7 +37,7 @@ websnifferApp.controller("WebSniffer", function ($scope, $http, $location, $cook
      * @type Object
      */
     $scope.formdata = {
-        url: "https://httpbin.org/redirect/5",
+        url: "",
         headers: [
             { key: "Accept-Encoding", value: "gzip, deflate" },
             { key: "User-Agent", value: __ua }
